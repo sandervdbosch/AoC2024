@@ -1,3 +1,9 @@
+# Ignore all files without extentions
+*
+!*.*
+!*/
+!LICENSE
+
 # Prerequisites
 *.d
 
@@ -50,3 +56,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#AOC specific
+*_data.txt
