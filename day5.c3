@@ -119,7 +119,7 @@ fn int part2(String file){
 
     foreach(line : prints){
         if (!allowed(line, before, after)) {
-            io::printn(sort_line(line, before, after));
+            // io::printn(sort_line(line, before, after));
             count += sort_line(line, before, after)[line.len() / 2];
         }
     }
@@ -131,22 +131,24 @@ fn int[] sort_line(List(<int>) pages, Instruction_hashmap before, Instruction_ha
     List(<int>) result;
     result.temp_init();
     result.add_all(&pages);
-    foreach(i, page : result){
-        if (before.has_key(page)){
-            for (usz index = 0; index < result.to_tarray()[..i].len; ++index){
+    for (usz i = 0; i < result.len(); ++i){
+        for (usz index = 0; index < result.to_tarray()[..i].len; ++index){
+            if (before.has_key(result[i])){
                 int j = result.to_tarray()[..i][index];
-                if (before.get(page)!!.contains(j)) {
-                    pages.swap(i, index);
-                    index = 0;
+                if (before.get(result[i])!!.contains(j)) {
+                    result.swap(i, index);
+                    --i;
+                    break;
                 }
             }
         }
-        if (after.has_key(page)){
-            for (usz index = 0; index < result.to_tarray()[i..].len; ++index){
+        for (usz index = 0; index < result.to_tarray()[i..].len; ++index){
+            if (after.has_key(result[i])){
                 int j = result.to_tarray()[i..][index];
-                if (after.get(page)!!.contains(j)) {
-                    pages.swap(i, index);
-                    index == 0;
+                if (after.get(result[i])!!.contains(j)) {
+                    result.swap(i, index + i);
+                    --i;
+                    break;
                 }
             }
         }
