@@ -61,7 +61,7 @@ fn int part1(String file){
 
     List(<String>)[] directions = {rows, columns, diagonals_L, diagonals_R};
 
-    malloc
+    // malloc
 
     foreach(direction : directions){
         count += read_rows(direction, needle, needle_r);

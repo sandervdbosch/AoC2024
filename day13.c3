@@ -4,6 +4,8 @@ import std::io;
 import std::time;
 import std::collections;
 
+import libc;
+
 struct Game
 {
     long[<2>] a;
@@ -29,16 +31,25 @@ fn void! main(String[] args)
 
 fn long part1(String file)
 {
-    Game[] games = process_input(file);
+    List(<Game>) games;
+    games.temp_init();
+
+    foreach(game : ((String) file::load_temp(file)!!).tsplit("\n\n"))
+    {
+        Game accumulator;
+
+        if (libc::sscanf(game, "Button A: X+%ld, Y+%ld\nButton B: X+%ld, Y+%ld\nPrize: X=%ld, Y=%ld", &accumulator.a.x, &accumulator.a.y, &accumulator.b.x, &accumulator.b.y, &accumulator.prize.x, &accumulator.prize.y) != 6) assert("sscanf failed!");
+        games.push(accumulator);
+    }
 
     long total_cost;
 
     foreach(game : games)
     {
         if((game.prize.x * game.b.y - game.b.x * game.prize.y) % (game.a.x * game.b.y - game.b.x * game.a.y) != 0) continue;
-        if((game.prize.x * game.a.y - game.a.x * game.prize.y) % (game.b.x * game.a.y - game.a.x * game.b.y) != 0) continue;
         long i = (game.prize.x * game.b.y - game.b.x * game.prize.y) / (game.a.x * game.b.y - game.b.x * game.a.y);
-        long j = (game.prize.x * game.a.y - game.a.x * game.prize.y) / (game.b.x * game.a.y - game.a.x * game.b.y);
+        if((game.prize.x - i * game.a.x) % game.b.x != 0) continue;
+        long j = (game.prize.x - i * game.a.x) / game.b.x;
         if(i >= 100 || j >= 100) continue;
         total_cost += 3 * i + j;
     }
@@ -47,7 +58,16 @@ fn long part1(String file)
 
 fn long part2(String file)
 {
-    Game[] games = process_input(file);
+    List(<Game>) games;
+    games.temp_init();
+
+    foreach(game : ((String) file::load_temp(file)!!).tsplit("\n\n"))
+    {
+        Game accumulator;
+
+        libc::sscanf(game, "Button A: X+%ld, Y+%ld\nButton B: X+%ld, Y+%ld\nPrize: X=%ld, Y=%ld", &accumulator.a.x, &accumulator.a.y, &accumulator.b.x, &accumulator.b.y, &accumulator.prize.x, &accumulator.prize.y);
+        games.push(accumulator);
+    }
 
     long total_cost;
 
@@ -55,34 +75,11 @@ fn long part2(String file)
     {
         game.prize += 10000000000000;
         if((game.prize.x * game.b.y - game.b.x * game.prize.y) % (game.a.x * game.b.y - game.b.x * game.a.y) != 0) continue;
-        if((game.prize.x * game.a.y - game.a.x * game.prize.y) % (game.b.x * game.a.y - game.a.x * game.b.y) != 0) continue;
         long i = (game.prize.x * game.b.y - game.b.x * game.prize.y) / (game.a.x * game.b.y - game.b.x * game.a.y);
-        long j = (game.prize.x * game.a.y - game.a.x * game.prize.y) / (game.b.x * game.a.y - game.a.x * game.b.y);
+        if((game.prize.x - i * game.a.x) % game.b.x != 0) continue;
+        long j = (game.prize.x - i * game.a.x) / game.b.x;
 
         total_cost += 3 * i + j;
     }
     return total_cost;
-}
-
-fn Game[] process_input(String file)
-{
-    String[] game_text = ((String) file::load_temp(file)!!).tsplit("\n\n");
-
-    List(<Game>) games;
-    games.temp_init(game_text.len);
-    Game accumulator;
-
-    foreach(game : game_text)
-    {
-        accumulator.a.x = game[12..game.index_of_char(',') - 1].to_long()!!;
-        accumulator.a.y = game[game.index_of_char_from('+', 12) + 1 .. game.index_of_char('\n') - 1].to_long()!!;
-        game = game[game.index_of_char('\n')!! + 1..];
-        accumulator.b.x = game[12..game.index_of_char(',') - 1].to_long()!!;
-        accumulator.b.y = game[game.index_of_char_from('+', 12) + 1 .. game.index_of_char('\n') - 1].to_long()!!;
-        game = game[game.index_of_char('\n')!! + 1..];
-        accumulator.prize.x = game[9..game.index_of_char(',') - 1].to_long()!!;
-        accumulator.prize.y = game[game.index_of_char_from('=', 9) + 1 ..].to_long()!!;
-        games.push(accumulator);
-    }
-    return games.to_tarray();
 }
