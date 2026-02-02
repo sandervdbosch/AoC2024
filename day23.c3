@@ -6,128 +6,128 @@ import std::collections;
 import std::sort;
 
 fn void main(String[] args){
-    @pool()
-    {
-        Clock c = clock::now();
-        io::printfn("Part1 answer: %d - completed in %s", part1(args[1]), c.mark());
-        io::printfn("Part2 answer: %s - completed in %s", part2(args[1]), c.mark());
-    };
+	@pool()
+	{
+		Clock c = clock::now();
+		io::printfn("Part1 answer: %d - completed in %s", part1(args[1]), c.mark());
+		io::printfn("Part2 answer: %s - completed in %s", part2(args[1]), c.mark());
+	};
 }
 
 alias ComputerHash = HashMap{String, HashSet{String}};
 
 fn int part1(String file){
-    String[] data = ((String) file::load_temp(file)).tsplit("\n")!!;
+	String[] data = ((String) file::load_temp(file)).tsplit("\n")!!;
 
-    ComputerHash computers;
-    computers.tinit();
+	ComputerHash computers;
+	computers.tinit();
 
-    List{String[3]} triplets;
-    triplets.tinit();
+	List{String[3]} triplets;
+	triplets.tinit();
 
-    foreach(line : data){
-        String first = line[:2];
-        String second = line[3..];
+	foreach(line : data){
+		String first = line[:2];
+		String second = line[3..];
 
-        HashSet{String}* connections;
+		HashSet{String}* connections;
 
-        connections = !computers.has_key(first) ? (HashSet{String}){}.tinit(): computers.get_ref(first)!!;
-        if(!connections.contains(second)) {
-            connections.add(second);
-            computers.set(first, *connections);
-        }
+		connections = !computers.has_key(first) ? (HashSet{String}){}.tinit(): computers.get_ref(first)!!;
+		if(!connections.contains(second)) {
+			connections.add(second);
+			computers.set(first, *connections);
+		}
 
-        connections = !computers.has_key(second) ? (HashSet{String}){}.tinit(): computers.get_ref(second)!!;
-        if(!connections.contains(first)) {
-            connections.add(first);
-            computers.set(second, *connections);
-        }
+		connections = !computers.has_key(second) ? (HashSet{String}){}.tinit(): computers.get_ref(second)!!;
+		if(!connections.contains(first)) {
+			connections.add(first);
+			computers.set(second, *connections);
+		}
 
-        HashSet{String} a = computers.get(first)!!;
-        HashSet{String} b = computers.get(second)!!;
+		HashSet{String} a = computers.get(first)!!;
+		HashSet{String} b = computers.get(second)!!;
 
-        String[] c = a.tintersection(&b).tvalues();
+		String[] c = a.tintersection(&b).tvalues();
 
-        foreach(third : c){
-            if(first.starts_with("t") || second.starts_with("t") || third.starts_with("t")) triplets.push((String[3]){first, second, third});
-        }
-    }
+		foreach(third : c){
+			if(first.starts_with("t") || second.starts_with("t") || third.starts_with("t")) triplets.push((String[3]){first, second, third});
+		}
+	}
 
-    return (int)triplets.len();
+	return (int)triplets.len();
 }
 
 fn bool test_contains(HashSet{String} set, List{String} list){
-    foreach(item : list){
-        if (!set.contains(item)) return false;
-    }
-    return true;
+	foreach(item : list){
+		if (!set.contains(item)) return false;
+	}
+	return true;
 }
 
 fn String part2(String file){
-    String[] data = ((String) file::load_temp(file)).tsplit("\n")!!;
+	String[] data = ((String) file::load_temp(file)).tsplit("\n")!!;
 
-    ComputerHash computers;
-    computers.tinit();
+	ComputerHash computers;
+	computers.tinit();
 
-    List{String[3]} triplets;
-    triplets.tinit();
+	List{String[3]} triplets;
+	triplets.tinit();
 
-    usz best;
-    String[] best_list;
+	usz best;
+	String[] best_list;
 
-    foreach(line : data){
-        String first = line[:2];
-        String second = line[3..];
+	foreach(line : data){
+		String first = line[:2];
+		String second = line[3..];
 
-        HashSet{String}* connections;
+		HashSet{String}* connections;
 
-        connections = !computers.has_key(first) ? (HashSet{String}){}.tinit(): computers.get_ref(first)!!;
-        if(!connections.contains(second)) {
-            connections.add(second);
-            computers.set(first, *connections);
-        }
+		connections = !computers.has_key(first) ? (HashSet{String}){}.tinit(): computers.get_ref(first)!!;
+		if(!connections.contains(second)) {
+			connections.add(second);
+			computers.set(first, *connections);
+		}
 
-        connections = !computers.has_key(second) ? (HashSet{String}){}.tinit(): computers.get_ref(second)!!;
-        if(!connections.contains(first)) {
-            connections.add(first);
-            computers.set(second, *connections);
-        }
+		connections = !computers.has_key(second) ? (HashSet{String}){}.tinit(): computers.get_ref(second)!!;
+		if(!connections.contains(first)) {
+			connections.add(first);
+			computers.set(second, *connections);
+		}
 
-        List{String} temp_list;
-        temp_list.tinit();
+		List{String} temp_list;
+		temp_list.tinit();
 
-        temp_list.push(first);
-        temp_list.push(second);
+		temp_list.push(first);
+		temp_list.push(second);
 
-        HashSet{String} a = computers.get(first)!!;
-        HashSet{String} b = computers.get(second)!!;
+		HashSet{String} a = computers.get(first)!!;
+		HashSet{String} b = computers.get(second)!!;
 
-        String[] c = a.tintersection(&b).tvalues();
+		String[] c = a.tintersection(&b).tvalues();
 
-        foreach(other : c){
-            HashSet{String} otherset = computers.get(other)!!;
-            if (test_contains(otherset, temp_list)){
-                temp_list.push(other);
-            }
-        }
+		foreach(other : c){
+			HashSet{String} otherset = computers.get(other)!!;
+			if (test_contains(otherset, temp_list)){
+				temp_list.push(other);
+			}
+		}
 
-        if(temp_list.len() > best) {
-            best = temp_list.len();
-            best_list = temp_list.to_tarray();
-        }
-        temp_list.clear();
-    }
+		if(temp_list.len() > best) {
+			best = temp_list.len();
+			best_list = temp_list.to_tarray();
+		}
+		temp_list.clear();
+	}
 
-    sort::quicksort(best_list);
+	sort::quicksort(best_list);
 
-    String result;
+	String result;
 
-    foreach(item : best_list){
-        result = result.tconcat(item);
-        result = result.tconcat(",");
-    }
+	foreach(item : best_list){
+		result = result.tconcat(item);
+		result = result.tconcat(",");
+	}
 
-    return result[.. ^2];
+	return result[.. ^2];
 }
 
 fn bool String.less(self, String other)
