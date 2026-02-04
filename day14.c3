@@ -23,11 +23,7 @@ fn long part1(String file){
 	foreach(line : data.tsplit("\n")){
 		int[<2>][2] collector;
 		libc::sscanf(line, "p=%d,%d v=%d,%d", &collector[0].x, &collector[0].y, &collector[1].x, &collector[1].y);
-		// input.push(collector);
-		// The compiler crashes when calling the .push() method.
-		// When performing the push in the function it works
-		input.reserve(1);
-		input.entries[input.set_size(input.size + 1)] = collector;
+		input.push(collector);
 	}
 
 	// io::printn(input);
@@ -67,11 +63,7 @@ fn long part2(String file){
 	foreach(line : data.tsplit("\n")){
 		int[<2>][2] collector;
 		libc::sscanf(line, "p=%d,%d v=%d,%d", &collector[0].x, &collector[0].y, &collector[1].x, &collector[1].y);
-		// input.push(collector);
-		// The compiler crashes when calling the .push() method.
-		// When performing the push in the function it works
-		input.reserve(1);
-		input.entries[input.set_size(input.size + 1)] = collector;
+		input.push(collector);
 	}
 
 	int[<2>] field_size = file.contains("example") ? {11, 7} : {101, 103};
